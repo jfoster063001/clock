@@ -1,31 +1,189 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32616.157
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jackson Foster Clock", "Jackson Foster Clock\Jackson Foster Clock.vcxproj", "{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Debug|x64.ActiveCfg = Debug|x64
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Debug|x64.Build.0 = Debug|x64
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Debug|x86.ActiveCfg = Debug|Win32
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Debug|x86.Build.0 = Debug|Win32
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Release|x64.ActiveCfg = Release|x64
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Release|x64.Build.0 = Release|x64
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Release|x86.ActiveCfg = Release|Win32
-		{9E4400AA-0DDA-48C6-907B-CB8516ED2D70}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E667FEEC-8720-4E58-A1B9-CAB89277C86D}
-	EndGlobalSection
-EndGlobal
+#include<iostream>
+#include<stdlib.h>
+#include<iomanip>
+#include<Windows.h>
+#include<thread>
+using namespace std;
+// these are the global variables i will be updating
+int hr = 1;
+int mins = 0;
+int sec = 0;
+int mil = 0;
+
+// this function will check if the time and make it am or pm
+string ampm(unsigned int h) {
+	
+	string timeOfDay = " A M";
+	// if time is greater than 12 it changes it to pm then once the time hits 12 it exits the loop and makes it am again
+	if (h >= 12) {
+		h -= 12;
+		timeOfDay = " P M";
+		if (h == 0) {
+			h = 12;
+		}
+	}
+	else if (h == 0) {
+		h = 12;
+	}
+	// this returns the string am or pm
+	return timeOfDay;
+}
+
+// these are my accsessors and mutators to change and get the time
+void setSec(int s) {
+	sec = s;
+}
+void setMin(int m) {
+	mins = m;
+}
+void setHour(int h) {
+	hr = h;
+}
+void setMil(int mi) {
+	mil = mi;
+}
+int getSec() {
+	return sec;
+}
+int getMin() {
+	return mins;
+}
+int getHour() {
+	return hr;
+}
+int getMil() {
+	return mil;
+}
+
+
+// these functions will get the current time then if it is withen the parameters it will update the time accordingly
+// as in once hours reach 12 it will change it to 1
+void addhr() {
+	int h = getHour();
+	if (-1 < h && h < 12) {
+		h += 1;
+	}
+	else {
+		h = 1;
+		
+	}
+	setHour(h);
+}
+// i did the same for the mins as i did for the function above addhr
+void addmin() {
+	int m = getMin();
+	if (-1 < m && m < 59) {
+		m += 1;
+	}
+	else {
+		m = 0;
+		addhr();
+	}
+	setMin(m);
+}
+// i made a seperate millitary time to simpify it for me
+void addmil() {
+	int mi = getMil();
+	if (-1 < mi && mi < 23) {
+		mi += 1;
+	}
+	else {
+		mi = 0;
+		addmin();
+	}
+	setMil(mi);
+
+}
+// this is the constant loop that updates the time and i have it running in the function runClock constantly
+void addsec() {
+	int s = getSec();
+	if (-1 < s && s < 59) {
+		s += 1;
+	}
+	else {
+		s = 0;
+		addmin();
+	}
+	setSec(s);
+}
+// this gets the user input checking for what they want to update and it will update accordingly
+int getInput() {
+
+	string userInput;
+	
+	// i used a while loop to make it always look for an input
+	while (userInput != "4") {
+
+		cin >> userInput;
+		if (userInput == "1") {
+			addsec();
+		}
+		if (userInput == "2") {
+			addmin();
+		}
+		// this is how i update both 24 hour time as well as millitary time
+		if (userInput == "3") {
+			addhr();
+			addmil();
+		}
+		// if user inputs 4 it breaks the loop and returns 0 to end the program
+		if (userInput == "4") {
+			break;
+		}
+
+		cout << "updating time now";
+	}
+	
+
+	return 0;
+}
+// this is the run clock function which outputs the actual clock and shows the menu
+int runClock() {
+	
+
+	while (true) {
+		// this is how i clear the display and update it using the line below
+		system("cls");
+		cout << "*************************************************************\n";
+		cout << "*                                                           *\n";
+		cout << "*                                                           *\n";
+		cout << "*   ********************             ********************   *\n";
+		cout << "*   *   12-hour Clock  *             *   24-hour Clock  *   *\n";
+		cout << "*   *                  *             *                  *   *\n";
+		cout << "*   * " << setw(2) << setfill('0') << getHour() << " : " << setw(2) << setfill('0') << getMin() << " : " << setw(2) << setfill('0') << getSec()<< ampm(getHour()) <<" *             *  "
+			<<setw(2) << setfill('0')<< getMil() << " : " << setw(2) << setfill('0') << getMin() << " : " << setw(2) << setfill('0') << getSec() << "    *   *" << endl;
+		cout << "*   *                  *             *                  *   *\n";
+		cout << "*   ********************             ********************   *\n";
+		cout << "*                                                           *\n";
+		cout << "*                                                           *\n";
+		cout << "*************************************************************\n";
+		cout << "*                                                           *\n";
+		cout << "*                   1- Add One Second                       *\n";
+		cout << "*                                                           *\n";
+		cout << "*                   2- Add One Minuite                      *\n";
+		cout << "*                                                           *\n";
+		cout << "*                   3- Add One Hour                         *\n";
+		cout << "*                                                           *\n";
+		cout << "*                   4- Quit                                 *\n";
+		cout << "*                                                           *\n";
+		cout << "*************************************************************\n";
+
+		// this is how the clock constantly runs by calling the add second function
+		addsec();
+		// i had to use this delay to have an accurate way to keep the time
+		Sleep(1000);
+
+
+
+	}
+}
+int main() {
+	// this is my main function which uses multithreading to have it check for inputs aswell as run the clock
+	// these two functions are the ones always running looking for input aswell as running the clock
+	std::thread th1(runClock);
+	getInput();
+	// this detaches the thread so i can close the program
+	th1.detach();
+	return 0;
+
+	}
